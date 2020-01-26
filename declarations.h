@@ -4,4 +4,6 @@ char* Connect_Directory_Path(DIR* dir_path,dirent* folder);
 char* Concat_Char_Arrays(char* arr_1,char* arr_2);
 char* Duplicate_Char_Array(char* arr);
 
-void Search_In_Directory_Files(DIR* dir_path,dirent* folder,char* virus_sign);
+void Search_In_Directory_Files(char* dir_path,dirent* folder,char* virus_sign);
+int Exists_In_File(char* file_path,char* virus_sign);
+int Exists_In_Charr(char* info,char* sign);
