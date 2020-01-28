@@ -19,9 +19,7 @@ char* Get_File_Characters(FILE* file,int* info_size){
             file_character=fgetc(file); //getting the next character from the file
         }
     }while((file_character!=EOF) & (temp_ptr!=NULL));
-    printf("all good\n");
     *info_size=length;
-    printf("all good?\n");
     if(temp_ptr==NULL){
         printf("There was a problem with reading the file: realloc failed to reallocate memory\n");return NULL;
     }
@@ -42,15 +40,16 @@ char* Connect_Directory_Path(char* dir_path,struct dirent* folder){
         printf("Done going over the directory.\n");
         return NULL;
     }
-
+    while(*(folder->d_name)=='.'){
+        folder=readdir(dir);
+    }
     return Concat_Char_Arrays(dir_path,folder->d_name); //returns the path to the directory concatted with the file name
 }
 
 int Exists_In_Charr(char* info,char* sign){
-    printf("Enters Exists_In_Charr \n");
-    int sign_length = sizeof(sign)/sizeof(char);
-    int info_length = sizeof(info)/sizeof(char);
-    printf("%d = %d ?\n",info_length,sign_length);
+    printf("Enters Exists_In_Charr \n\n");
+    int sign_length = Get_Arr_Size(sign);
+    int info_length = Get_Arr_Size(info);
     int flag=1;
     for(int i=0;i<info_length;i++){
         for(int j=0;j<sign_length;j++){
@@ -60,24 +59,24 @@ int Exists_In_Charr(char* info,char* sign){
             return 1;
         }
     }
-    printf("Exits Exists_In_Charr \n");
+    printf("\nExits Exists_In_Charr \n");
     return 0;
 }
 
 int Exists_In_File(char* file_path,char* virus_sign,int virus_length){
-    printf("Enters Exists_in_file \n");
+    printf("Enters Exists_in_file \n\n");
     FILE* file = fopen(file_path,"r");
-    int* file_size;
-    char* file_info = Get_File_Characters(file,file_size);
-    printf("The file's size is: %d\n",*file_size);
+    int file_size;
+    char* file_info = Get_File_Characters(file,&file_size);
+    printf("The file's size is: %d\n",file_size);
     printf("%s\n",file_info);
-    printf("Exits Exists_in_file \n");
+    printf("\nExits Exists_in_file \n");
 
     return Exists_In_Charr(file_info,virus_sign);
 }
 
 void Search_In_Directory_Files(char* dir_path,struct dirent* folder,char* virus_sign,int virus_length){
-    printf("Enters Search_In_Directory_Files \n");
+    printf("Enters Search_In_Directory_Files \n\n");
     char* file_path;
     do{
         file_path = Connect_Directory_Path(dir_path,folder); //gets a path to a file from the folder
@@ -93,36 +92,49 @@ void Search_In_Directory_Files(char* dir_path,struct dirent* folder,char* virus_
         free(file_path); //the dynamically allocated array from the function Concat_Char_Arrays is no longer needed, so we free the memory space it took up.
 
     }while(file_path!=NULL); //goes as long as there are still files in the directory
-    printf("Exits Search_In_Directory_Files \n");
+    printf("\nExits Search_In_Directory_Files \n");
 }
 
 char* Concat_Char_Arrays(char* arr_1,char* arr_2){
-    printf("Enters Concat_Char_Arrays \n");
+    printf("Enters Concat_Char_Arrays \n\n");
     char* concatted=Duplicate_Char_Array(arr_1);
     char arr_2_char=arr_2[0];
-    int length_of_arr_1=sizeof(*arr_1)/sizeof(char);
-    int length_of_arr_2=sizeof(*arr_2)/sizeof(char);
-    printf("length1: %d\nlength 2: %d\n",length_of_arr_1,length_of_arr_2);
+    printf("arr2char: %c\n",arr_2_char);
+
+    int length_of_arr_1=Get_Arr_Size(arr_1);
+    int length_of_arr_2=Get_Arr_Size(arr_2);
+
+    printf("length 1: %d\nlength 2: %d\n",length_of_arr_1,length_of_arr_2);
+
     for(int i=length_of_arr_1+1;arr_2_char!='\0';i++){
         realloc(concatted,((i)*sizeof(char)));
         concatted[i-1]=arr_2_char;
         arr_2_char=arr_2[i-length_of_arr_1];
     }
     printf("arr_1: %s\narr_2: %s\nconcatted: %s\n",arr_1,arr_2,concatted);
-    printf("Exits Concat_Char_Arrays \n");
-    printf("Exits Connect_Directory_Path \n");
+    printf("\nExits Concat_Char_Arrays \n");
+    printf("\nExits Connect_Directory_Path \n");
     return concatted;
 }
 
+int Get_Arr_Size(char* arr_1)
+{
+    int i=1;
+    while(arr_1[i]!='\0'){
+        i++;
+    }
+    return i;
+}
+
 char* Duplicate_Char_Array(char* arr){
-    printf("Enters Duplicate_Char_Array \n");
-    char* dupe = malloc(sizeof(arr));
+    printf("Enters Duplicate_Char_Array \n\n");
+    char* dupe = malloc(Get_Arr_Size(arr));
     char arr_char=arr[0];
     for(int i=0;arr_char!='\0';i++){
-        dupe[i]=arr_char;
         arr_char=arr[i];
+        dupe[i]=arr_char;
     }
-    printf("Exits Duplicate_Char_Array \n");
+    printf("\nexits Duplicate_Char_Array \n");
     return dupe;
 }
 
