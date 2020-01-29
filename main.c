@@ -15,7 +15,6 @@ int main(int argc, char** argv){
 
     Search_In_Directory_Files(argv[2],folder,virus_sign,virus_length);
 
-    printf("bruh\n");
     fclose(virus_file);
     free(virus_sign);
     return 0;

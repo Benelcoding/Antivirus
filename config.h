@@ -1,3 +1,3 @@
-#define SAFE_COLOR "\\e[0;32m"
-#define UNSAFE_COLOR "\\e[0;31m"
-#define NORMAL_COLOR "\\e[0m"
+#define SAFE_COLOR FOREGROUND_GREEN
+#define UNSAFE_COLOR FOREGROUND_RED
+
