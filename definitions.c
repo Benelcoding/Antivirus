@@ -28,7 +28,7 @@ char* Get_File_Characters(FILE* file,int* info_size){
     }
 }
 
-char* Connect_Directory_Path(DIR* dir,char* dir_path,struct dirent* folder){
+char* Connect_Directory_Path(DIR* dir,char* temp_path,struct dirent* folder){
     if(dir==NULL){
         printf("The path given in the argument to the directory is invalid or inaccessible...\n");
         return NULL;
@@ -41,13 +41,11 @@ char* Connect_Directory_Path(DIR* dir,char* dir_path,struct dirent* folder){
     while(*(folder->d_name)=='.'){
         folder=readdir(dir);
     }
-
-    return strcat(dir_path,folder->d_name); //returns the path to the directory concatted with the file name
+    temp_path=realloc(temp_path,strlen(folder->d_name)+strlen(temp_path)+1);
+    return strcat(temp_path,folder->d_name); //returns the path to the directory concatted with the file name
 }
 
 int Exists_In_Charr(int info_length,int sign_length,char* info,char* sign){
-    printf("info is %s\n",info);
-    printf("sign is %s\n",sign);
     for(int i=0;i<info_length;i++){
         int flag=1;
         for(int j=0;j<sign_length;j++){
@@ -69,6 +67,7 @@ int Exists_In_File(char* file_path,char* virus_sign,int virus_length){
 
 void Search_In_Directory_Files(char* dir_path,struct dirent* folder,char* virus_sign,int virus_length){
     char* file_path;
+    char* temp_path;
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //connecting to the console
     CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
     WORD saved_attributes;
@@ -76,15 +75,19 @@ void Search_In_Directory_Files(char* dir_path,struct dirent* folder,char* virus_
     saved_attributes = consoleInfo.wAttributes;
     DIR* dir = opendir(dir_path);  //connects to the directory in the location dir_path
     do{
-        file_path = Connect_Directory_Path(dir,dir_path,folder); //gets a path to a file from the folder
+        free(temp_path); //the dynamically allocated array from the function Concat_Char_Arrays is no longer needed, so we free the memory space it took up.
+        temp_path = malloc(strlen(dir_path)+1);
+        strcpy(temp_path,dir_path);
+        file_path = Connect_Directory_Path(dir,temp_path,folder); //gets a path to a file from the folder
+
         if(file_path!=NULL){
-            if(Exists_In_File(file_path,virus_sign,virus_length)){
-            SetConsoleTextAttribute(hConsole, UNSAFE_COLOR); //sets the print color to the safe color
-        }
-        else{
-            SetConsoleTextAttribute(hConsole, SAFE_COLOR); //sets the print color to the unsafe color
-        }
-        printf("%s\n",file_path); //prints the file name in the color set by the previous "if" statement
+            if(Exists_In_File(temp_path,virus_sign,virus_length)){
+                SetConsoleTextAttribute(hConsole, UNSAFE_COLOR); //sets the print color to the safe color
+            }
+            else{
+                SetConsoleTextAttribute(hConsole, SAFE_COLOR); //sets the print color to the unsafe color
+            }
+        printf("%s\n",temp_path); //prints the file name in the color set by the previous "if" statement
         SetConsoleTextAttribute(hConsole, saved_attributes); // Restore original attributes
         }
     }while(file_path!=NULL); //goes as long as there are still files in the directory
