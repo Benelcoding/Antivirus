@@ -1,9 +1,9 @@
-#include <dirent.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <dirent.h> //used to traverse files in a directory.
+#include <stdio.h> //used for printing to the screen.
+#include <stdlib.h> //used for dynamic memory allocation.
 #include <windows.h> //is used to get a handle on the console and print text in color!
-#include "config.h"
-#include "declarations.h"
+#include "config.h" //has constants used for printing colors.
+#include "declarations.h" //has declarations of all functions in this file.
 
 char* GetFileCharacters(FILE* file,int* info_size){
     int length=0;
